@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserCreateReq extends FormRequest
+class ProductCreateReq extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class UserCreateReq extends FormRequest
      */
     public function authorize()
     {
-        return \Gate::allows('edit', 'users');
+        return true;
     }
 
     /**
@@ -24,11 +24,9 @@ class UserCreateReq extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'email' => 'required',
-            'password' => 'required',
-            'role_id' => 'required',
+            'title' => 'required',
+            'image' => 'required',
+            'price' => 'required|numeric',
         ];
     }
 }

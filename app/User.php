@@ -4,10 +4,13 @@ namespace App;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\{DatabaseNotification, DatabaseNotificationCollection, Notifiable};
 use Illuminate\Support\Carbon;
+use Laravel\Passport\Client;
 use Laravel\Passport\HasApiTokens;
+use Laravel\Passport\Token;
 
 /**
  * App\User
@@ -32,12 +35,19 @@ use Laravel\Passport\HasApiTokens;
  * @method static Builder|User wherePassword($value)
  * @method static Builder|User whereUpdatedAt($value)
  * @mixin Eloquent
+ * @property-read Collection|Client[] $clients
+ * @property-read int|null $clients_count
+ * @property-read Collection|Token[] $tokens
+ * @property-read int|null $tokens_count
+ * @property int $role_id
+ * @property-read Role $role
+ * @method static Builder|User whereRoleId($value)
  */
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $guarded = [];
+    protected $guarded = ['id'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -56,4 +66,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function permissions()
+    {
+        return $this->role->permissions->pluck('name');
+    }
+
+    public function hasAccess($access)
+    {
+        return $this->permissions()->contains($access);
+    }
 }
