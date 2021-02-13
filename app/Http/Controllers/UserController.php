@@ -4,16 +4,21 @@ namespace App\Http\Controllers;
 
 use Auth, Hash, Gate;
 use App\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use App\Http\Requests\{UserCreateReq, UserUpdateReq};
 use App\Http\Resources\UserResource;
-use Illuminate\Http\{Request, Response};
+use Illuminate\Http\{Request, Resources\Json\AnonymousResourceCollection, Response};
 
 class UserController extends Controller
 {
+    /**
+     * @return AnonymousResourceCollection
+     * @throws AuthorizationException
+     */
     public function index()
     {
         Gate::authorize('view', 'users');
-        $users = User::paginate();
+        $users = User::paginate(5);
         return UserResource::collection($users);
     }
 
